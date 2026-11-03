@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomogram Calculator for Early Risk Stratification of Severe Mycoplasma pneumoniae Pneumonia (SMPP) in Children</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent2: #0ea5e9;
+    --red: #dc2626;
+    --green: #16a34a;
+    --amber: #d97706;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  header h1 { font-size: 24px; margin-bottom: 8px; color: var(--text); }
+  header .subtitle { color: var(--muted); font-size: 14px; }
+  header .disclaimer {
+    margin-top: 12px; font-size: 12px; color: var(--muted);
+    background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px;
+    padding: 10px 14px; text-align: left;
+  }
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card h2 { font-size: 16px; margin-bottom: 16px; color: var(--text); border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field label .unit { color: var(--muted); font-weight: 400; font-size: 12px; }
+  .field input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 15px; transition: border .15s;
+  }
+  .field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .divider { border: none; border-top: 1px dashed var(--border); margin: 18px 0; }
+  .section-label { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  .result-box {
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    border: 1px solid #bfdbfe; border-radius: 12px; padding: 18px; text-align: center;
+  }
+  .result-box .prob { font-size: 44px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+  .result-box .prob-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .risk-badge { display: inline-block; margin-top: 12px; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; }
+  .risk-low { background: #dcfce7; color: #166534; }
+  .risk-mid { background: #fef9c3; color: #854d0e; }
+  .risk-high { background: #fee2e2; color: #991b1b; }
+  .metrics { margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+  .metrics .m { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 4px; }
+  .metrics .m .v { font-size: 18px; font-weight: 700; color: var(--text); }
+  .metrics .m .k { font-size: 10px; color: var(--muted); }
+  .mipi-display { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
+  .mipi-display b { color: var(--text); }
+  table.thresh { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  table.thresh th, table.thresh td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
+  table.thresh th { background: #f8fafc; font-weight: 600; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 12px; }
+  .formula-box {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; font-size: 12px; font-family: "SF Mono", Consolas, monospace;
+    color: #334155; overflow-x: auto; white-space: pre;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Nomogram Calculator for Early Risk Stratification of Severe Mycoplasma pneumoniae Pneumonia (SMPP) in Children</h1>
+    <div class="subtitle">Integrating a serum composite index (CARDS toxin, LC3, MUC5AC) and clinical parameters</div>
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> For research and educational purposes only; NOT for clinical diagnostic or treatment decisions.
+      This calculator is derived from a single-center observational study (n = 161; 61 SMPP cases) and has not been externally validated.
+      Results do not replace professional clinical judgment. Predictive values depend on the SMPP prevalence in the study cohort (37.9%)
+      and may differ across institutions.
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left column: inputs -->
+    <div class="card">
+      <h2>1. Input Parameters</h2>
+
+      <div class="section-label">Serum biomarkers (for MIPI calculation)</div>
+      <div class="field">
+        <label>CARDS TX <span class="unit">(assay units)</span></label>
+        <input type="number" id="cards" step="any" placeholder="e.g., 167.11">
+        <div class="hint">Reference range: 38.29 &ndash; 284.62</div>
+      </div>
+      <div class="field">
+        <label>LC3 <span class="unit">(pg/mL)</span></label>
+        <input type="number" id="lc3" step="any" placeholder="e.g., 454.21">
+        <div class="hint">Reference range: 121.32 &ndash; 878.29</div>
+      </div>
+      <div class="field">
+        <label>MUC5AC <span class="unit">(pg/mL)</span></label>
+        <input type="number" id="muc5ac" step="any" placeholder="e.g., 74.32">
+        <div class="hint">Reference range: 19.62 &ndash; 107.67</div>
+      </div>
+
+      <hr class="divider">
+      <div class="section-label">Clinical parameters</div>
+      <div class="field">
+        <label>Fever duration <span class="unit">(days)</span></label>
+        <input type="number" id="fever" step="any" placeholder="e.g., 3">
+        <div class="hint">Days of fever at admission</div>
+      </div>
+      <div class="field">
+        <label>C-reactive protein (CRP) <span class="unit">(mg/L)</span></label>
+        <input type="number" id="crp" step="any" placeholder="e.g., 10">
+      </div>
+      <div class="field">
+        <label>Platelet count (PLT) <span class="unit">(&times;10<sup>9</sup>/L)</span></label>
+        <input type="number" id="plt" step="any" placeholder="e.g., 300">
+      </div>
+
+      <div class="formula-box">
+Model equations:
+logit(P) = &minus;5.090 + 1.421&times;MIPI + 0.219&times;Fever duration + 0.040&times;CRP + 0.011&times;PLT
+
+MIPI = 0.965&times;Z(CARDS) + 0.941&times;Z(LC3) + 0.925&times;Z(MUC5AC)
+Z(x) = (x &minus; mean) / SD
+Mean: CARDS 167.11, LC3 454.21, MUC5AC 74.32
+SD:   CARDS 49.51,  LC3 163.33, MUC5AC 18.53
+      </div>
+    </div>
+
+    <!-- Right column: results -->
+    <div class="card">
+      <h2>2. Predicted Result</h2>
+      <div class="result-box">
+        <div class="prob" id="probDisplay">&mdash;</div>
+        <div class="prob-label">Predicted probability of SMPP</div>
+        <div id="riskBadge"></div>
+      </div>
+
+      <div class="mipi-display" id="mipiDisplay">MIPI = &mdash;</div>
+
+      <h2 style="margin-top:20px;">3. Risk Stratification &amp; Thresholds</h2>
+      <table class="thresh">
+        <thead>
+          <tr><th>Threshold</th><th>Sensitivity</th><th>Specificity</th><th>PPV</th><th>NPV</th><th>Suggested use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&ge; 30%</td><td>85.2%</td><td>74.0%</td><td>66.7%</td><td>89.2%</td><td>Screening / alerting</td></tr>
+          <tr><td>&ge; 50%</td><td>70.5%</td><td>88.0%</td><td>78.2%</td><td>83.0%</td><td>Reference threshold (max Youden index)</td></tr>
+          <tr><td>&ge; 70%</td><td>49.2%</td><td>96.0%</td><td>88.2%</td><td>75.6%</td><td>High-confidence identification</td></tr>
+        </tbody>
+      </table>
+
+      <div class="metrics" id="metricsDisplay">
+        <div class="m"><div class="v">&mdash;</div><div class="k">Total points (approx.)</div></div>
+        <div class="m"><div class="v">&mdash;</div><div class="k">MIPI</div></div>
+        <div class="m"><div class="v">&mdash;</div><div class="k">logit</div></div>
+        <div class="m"><div class="v">&mdash;</div><div class="k">Probability</div></div>
+      </div>
+
+      <p class="note">
+        Note: MIPI is the first principal-component score derived by principal component analysis (PCA) of the three Z-score standardized
+        serum biomarkers (89.1% of variance explained). "Total points" is an approximate nomogram score shown for reference only.
+        Model AUC = 0.872 (95% CI: 0.814&ndash;0.930); bootstrap-corrected AUC = 0.858.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Fixed parameters derived from the original dataset (n = 161)
+  const STD = {
+    CARDS: { mean: 167.1107, sd: 49.5084 },
+    LC3:   { mean: 454.2091, sd: 163.3316 },
+    MUC5AC:{ mean: 74.3186,  sd: 18.5337 }
+  };
+  const EV = { cards: 0.965, lc3: 0.941, muc5ac: 0.925 }; // component loadings (used as weights)
+  const B0 = -5.090, B_MIPI = 1.421, B_FEVER = 0.219, B_CRP = 0.040, B_PLT = 0.011;
+
+  function zscore(x, mean, sd) { return (x - mean) / sd; }
+
+  function computeMIPI(cards, lc3, muc5ac) {
+    const zc = zscore(cards, STD.CARDS.mean, STD.CARDS.sd);
+    const zl = zscore(lc3, STD.LC3.mean, STD.LC3.sd);
+    const zm = zscore(muc5ac, STD.MUC5AC.mean, STD.MUC5AC.sd);
+    const score = EV.cards * zc + EV.lc3 * zl + EV.muc5ac * zm;
+    return score;
+  }
+
+  function logistic(logit) { return 1 / (1 + Math.exp(-logit)); }
+
+  function el(id) { return document.getElementById(id); }
+
+  function readNum(id) {
+    const v = parseFloat(el(id).value);
+    return isNaN(v) ? null : v;
+  }
+
+  function compute() {
+    const cards = readNum('cards');
+    const lc3 = readNum('lc3');
+    const muc5ac = readNum('muc5ac');
+    const fever = readNum('fever');
+    const crp = readNum('crp');
+    const plt = readNum('plt');
+
+    const probEl = el('probDisplay');
+    const mipiEl = el('mipiDisplay');
+    const badgeEl = el('riskBadge');
+    const metrics = el('metricsDisplay');
+
+    if (cards == null || lc3 == null || muc5ac == null || fever == null || crp == null || plt == null) {
+      probEl.textContent = '\u2014';
+      mipiEl.textContent = 'MIPI = \u2014';
+      badgeEl.innerHTML = '';
+      metrics.innerHTML = '<div class="m"><div class="v">\u2014</div><div class="k">Total points</div></div>' +
+        '<div class="m"><div class="v">\u2014</div><div class="k">MIPI</div></div>' +
+        '<div class="m"><div class="v">\u2014</div><div class="k">logit</div></div>' +
+        '<div class="m"><div class="v">\u2014</div><div class="k">Probability</div></div>';
+      return;
+    }
+
+    const mipi = computeMIPI(cards, lc3, muc5ac);
+    const logit = B0 + B_MIPI * mipi + B_FEVER * fever + B_CRP * crp + B_PLT * plt;
+    const prob = logistic(logit);
+    const pct = prob * 100;
+
+    probEl.textContent = pct.toFixed(1) + '%';
+    mipiEl.innerHTML = 'MIPI = <b>' + mipi.toFixed(3) + '</b> (standardized composite index)';
+
+    let badgeCls, badgeTxt;
+    if (pct < 30) { badgeCls = 'risk-low'; badgeTxt = 'Low risk (continue observation)'; }
+    else if (pct < 50) { badgeCls = 'risk-mid'; badgeTxt = 'Intermediate risk (intensify monitoring)'; }
+    else if (pct < 70) { badgeCls = 'risk-mid'; badgeTxt = 'Moderate-to-high risk (close monitoring)'; }
+    else { badgeCls = 'risk-high'; badgeTxt = 'High risk (possible SMPP; consider escalation of intervention)'; }
+    badgeEl.innerHTML = '<span class="risk-badge ' + badgeCls + '">' + badgeTxt + '</span>';
+
+    const approxPoints = Math.max(0, Math.round((logit - B0) * 20));
+    metrics.innerHTML =
+      '<div class="m"><div class="v">' + approxPoints + '</div><div class="k">Total points (approx.)</div></div>' +
+      '<div class="m"><div class="v">' + mipi.toFixed(2) + '</div><div class="k">MIPI</div></div>' +
+      '<div class="m"><div class="v">' + logit.toFixed(2) + '</div><div class="k">logit</div></div>' +
+      '<div class="m"><div class="v">' + pct.toFixed(1) + '%</div><div class="k">Probability</div></div>';
+  }
+
+  ['cards','lc3','muc5ac','fever','crp','plt'].forEach(function(id){
+    el(id).addEventListener('input', compute);
+  });
+
+  // Default example values (typical values from the manuscript)
+  el('cards').value = 167.11;
+  el('lc3').value = 454.21;
+  el('muc5ac').value = 74.32;
+  el('fever').value = 3;
+  el('crp').value = 10;
+  el('plt').value = 300;
+  compute();
+})();
+</script>
+</body>
+</html>
